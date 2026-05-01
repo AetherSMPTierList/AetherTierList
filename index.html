@@ -230,6 +230,7 @@
 
 <script>
     // --- DATABASE ---
+    // Force reset local database on every load to read the hardcoded default database
     localStorage.removeItem('aether_database');
 
     let database = JSON.parse(localStorage.getItem('aether_database')) || [
@@ -237,7 +238,7 @@
             id: 1,
             name: "Synixal",
             region: "AS",
-            score: 135,
+            score: 65,
             tiers: "UHC:LT5, MACE:HT4, SMP:LT3, NETHPOT:LT4, CRYSTAL:HT5, DIAPOT:LT4, SWORD:LT3, AXE:LT5"
         },
         {
@@ -252,7 +253,7 @@
             name: "TabMarsh",
             region: "AS",
             score: 40,
-            tiers: "MACE:HT4, SMP:HT4, NETHPOT:LT5, CRYSTAL:HT4, DIAPOT:LT5, SWORD:HT5, AXE:LT5"
+            tiers: "MACE:HT4, SMP:HT4, NETHPOT:LT5, CRYSTAL:HT4, DIAPOT:LT5, SWORD:LT5, AXE:LT5"
         },
         {
             id: 4,
@@ -266,10 +267,11 @@
             name: "idregalka",
             region: "AS",
             score: 25,
-            tiers: "MACE:LT4, SMP:HT5, NETHPOT:LT5, CRYSTAL:HT3, DIAPOT:LT5, SWORD:HT5, AXE:LT5"
+            tiers: "MACE:LT4, SMP:HT5, NETHPOT:LT5, CRYSTAL:HT3, DIAPOT:LT5, SWORD:LT5, AXE:LT5"
         }
     ];
 
+    // Save to local storage
     localStorage.setItem('aether_database', JSON.stringify(database));
     
     let is_admin_mode = false;
@@ -284,17 +286,6 @@
     };
 
     // --- ADMIN VERIFICATION ---
-    function handleLogoClick = function() { }; // placeholder safety
-    function handleLogoClickReset = function() { };
-
-    function handleLogoClickReset = () => {
-        logo_clicks = 0;
-    };
-
-    function handleLogoClickReset.toString = () => {
-        return "";
-    };
-
     function handleLogoClick() {
         logo_clicks++;
         if (logo_clicks >= 3) {
