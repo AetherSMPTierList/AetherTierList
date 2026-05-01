@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AETHER | Professional Rankings</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #0b0e14;
+            --card-color: #151921;
+            --border-color: #222933;
+            --accent-purple: #a371f7;
+            --text-primary: #e6edf3;
+            --text-secondary: #848d97;
+            --region-bg: #3d2424;
+            --region-text: #ff7b7b;
+        }
+
+        * { box-sizing: border-box; transition: all 0.15s ease-in-out; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--bg-color); 
+            color: var(--text-primary); 
+            margin: 0; 
+            padding: 40px 20px;
+        }
+
+        .container { max-width: 900px; margin: 0 auto; }
+
+        /* HEADER & SEARCH */
+        .header-area { text-align: center; margin-bottom: 40px; }
+        .main-logo { 
+            font-size: 42px; 
+            font-weight: 900; 
+            letter-spacing: 4px; 
+            cursor: pointer; 
+            user-select: none;
+            text-transform: uppercase;
+        }
+        .main-logo span { color: var(--accent-purple); text-shadow: 0 0 15px rgba(163, 113, 247, 0.4); }
+        
+        .search-bar {
+            width: 100%;
+            max-width: 900px;
+            background: var(--card-color);
+            border: 1px solid var(--border-color);
+            color: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 15px;
+            outline: none;
+            margin-bottom: 25px;
+        }
+        .search-bar:focus { border-color: var(--accent-purple); }
+
+        /* ADMIN INTERFACE */
+        #adminInterface {
+            display: none;
+            background: var(--card-color);
+            border: 2px solid var(--accent-purple);
+            padding: 30px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .input-group { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
+        .full-width { grid-column: span 3; }
+        label { display: block; font-size: 11px; font-weight: 700; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; }
+        input, select {
+            width: 100%;
+            background: #000;
+            border: 1px solid var(--border-color);
+            color: #fff;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+        }
+        input:focus { border-color: var(--accent-purple); }
+        
+        .submit-btn {
+            background: var(--accent-purple);
+            color: #fff;
+            border: none;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: 900;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 15px;
+            text-transform: uppercase;
+        }
+        .submit-btn:hover { filter: brightness(1.2); }
+
+        /* THE LIST */
+        .rank-list-container { display: flex; flex-direction: column; gap: 10px; }
+        .player-row {
+            background: var(--card-color);
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            position: relative;
+            cursor: grab;
+        }
+        .player-row:active { cursor: grabbing; }
+        .player-row:hover { border-color: #30363d; }
+
+        .rank-number {
+            font-size: 32px;
+            font-weight: 900;
+            color: var(--accent-purple);
+            min-width: 55px;
+            font-style: italic;
+            cursor: pointer;
+        }
+
+        .player-info { flex-grow: 1; }
+        .player-name {
+            font-size: 20px;
+            font-weight: 700;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .region-badge { background: var(--region-bg); color: var(--region-text); font-size: 10px; font-weight: 900; padding: 3px 8px; border-radius: 5px; }
+        .score-display { font-size: 13px; color: var(--text-secondary); margin-top: 3px; font-weight: 600; }
+
+        .tier-container { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+        .tier-item { 
+            display: flex; 
+            align-items: center; 
+            gap: 6px;
+            background: #090b10;
+            border: 1px solid var(--border-color);
+            padding: 4px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        
+        .tier-icon {
+            width: 18px;
+            height: 18px;
+            object-fit: contain;
+        }
+
+        .tier-label { font-size: 11px; font-weight: 900; color: #d4a017; }
+
+        .delete-action {
+            position: absolute;
+            right: 25px;
+            color: #444;
+            cursor: pointer;
+            font-weight: 900;
+            font-size: 11px;
+            display: none;
+            border: 1px solid #444;
+            padding: 4px 8px;
+            border-radius: 5px;
+        }
+        .delete-action:hover { color: #ff4d4d; border-color: #ff4d4d; }
+
+        /* FOOTER WIDGET */
+        .footer-widget {
+            margin-top: 40px; text-align: center; background: var(--card-color); 
+            border: 1px solid var(--border-color); padding: 20px; border-radius: 12px;
+        }
+        .discord-btn {
+            display: inline-flex; align-items: center; gap: 8px; background: #5865F2; 
+            color: #fff; padding: 10px 20px; border-radius: 20px; font-weight: 700; 
+            text-decoration: none; font-size: 14px; margin-top: 10px;
+        }
+        .discord-btn:hover { filter: brightness(1.1); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-area">
+        <div class="main-logo" onclick="handleLogoClick()">Aether<span>Tiers</span></div>
+        <p style="color: var(--text-secondary); font-size: 13px;">Official Competitive Power Rankings</p>
+    </div>
+
+    <div id="adminInterface">
+        <h2 style="margin-top: 0; font-size: 16px; color: var(--accent-purple);">Admin Console</h2>
+        <div class="input-group">
+            <div>
+                <label>Player Name</label>
+                <input type="text" id="admin_name" placeholder="e.g. Synixal">
+            </div>
+            <div>
+                <label>Region</label>
+                <select id="admin_region">
+                    <option value="NA">NA</option>
+                    <option value="EU">EU</option>
+                    <option value="AS">AS</option>
+                    <option value="SA">SA</option>
+                    <option value="OC">OC</option>
+                </select>
+            </div>
+            <div>
+                <label>Score/Points</label>
+                <input type="number" id="admin_score" placeholder="1000">
+            </div>
+            <div class="full-width">
+                <label>Tiers (Format: UHC:HT3, POT:LT1, MACE:HT1)</label>
+                <input type="text" id="admin_tiers" placeholder="UHC:HT3, POT:LT1">
+            </div>
+        </div>
+        <button class="submit-btn" onclick="processNewPlayer()">Add Player To List</button>
+    </div>
+
+    <input type="text" id="searchBox" class="search-bar" placeholder="🔍 Search players..." onkeyup="refreshDisplay()">
+
+    <div id="rankList" class="rank-list-container"></div>
+
+    <div class="footer-widget">
+        <p style="color:var(--text-secondary); margin:0; font-size:13px;">Join the Aether Competitive community on Discord:</p>
+        <a href="https://discord.gg/y6qkqQKKhZ" target="_blank" class="discord-btn">
+            <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M20.317 4.369a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.078.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.692 0 12.641 12.641 0 00-.609-1.25.075.075 0 00-.078-.037 19.785 19.785 0 00-4.885 1.515.069.069 0 00-.032.056C.478 9.368-.15 14.288.13 19.192a.07.07 0 00.038.053 19.866 19.866 0 005.992 2.97.074.074 0 00.08-.026c.45-.63.844-1.296 1.189-1.99a.072.072 0 00-.036-.098 11.233 11.233 0 01-1.688-.813.072.072 0 01-.007-.107c.108-.08.214-.163.318-.247a.073.073 0 01.071-.012c3.279 1.487 6.829 1.487 10.082 0a.072.072 0 01.071.011c.105.085.21.168.32.248a.073.073 0 01-.007.107 11.772 11.772 0 01-1.687.813.073.073 0 00-.036.099c.348.692.739 1.358 1.19 1.988a.075.075 0 00.08.027 20.087 20.087 0 005.99-2.969.073.073 0 00.038-.054c.345-4.836-.252-9.746-2.185-14.162a.07.07 0 00-.031-.055zm-13.71 11.697c-1.359 0-2.483-1.242-2.483-2.768 0-1.526 1.106-2.768 2.483-2.768 1.38 0 2.496 1.242 2.483 2.768 0 1.526-1.103 2.768-2.483 2.768zm9.524 0c-1.359 0-2.483-1.242-2.483-2.768 0-1.526 1.106-2.768 2.483-2.768 1.378 0 2.496 1.242 2.483 2.768 0 1.526-1.105 2.768-2.483 2.768z"/></svg>
+            Join Aether Discord
+        </a>
+    </div>
+</div>
+
+<script>
+    // --- DATABASE ---
+    localStorage.removeItem('aether_database');
+
+    let database = JSON.parse(localStorage.getItem('aether_database')) || [
+        {
+            id: 1,
+            name: "Synixal",
+            region: "AS",
+            score: 135,
+            tiers: "UHC:LT5, MACE:HT4, SMP:LT3, NETHPOT:LT4, CRYSTAL:HT5, DIAPOT:LT4, SWORD:LT3, AXE:LT5"
+        },
+        {
+            id: 2,
+            name: "ZYC_ZENY",
+            region: "AS",
+            score: 50,
+            tiers: "UHC:LT5, MACE:HT4, SMP:HT4, NETHPOT:LT4, CRYSTAL:HT4, DIAPOT:LT5, SWORD:LT3, AXE:LT5"
+        },
+        {
+            id: 3,
+            name: "TabMarsh",
+            region: "AS",
+            score: 40,
+            tiers: "MACE:HT4, SMP:HT4, NETHPOT:LT5, CRYSTAL:HT4, DIAPOT:LT5, SWORD:HT5, AXE:LT5"
+        },
+        {
+            id: 4,
+            name: "dante",
+            region: "AS",
+            score: 30,
+            tiers: "MACE:HT5, SMP:LT5, NETHPOT:HT5, CRYSTAL:HT5, DIAPOT:LT5, SWORD:HT4, AXE:LT5"
+        },
+        {
+            id: 5,
+            name: "idregalka",
+            region: "AS",
+            score: 25,
+            tiers: "MACE:LT4, SMP:HT5, NETHPOT:LT5, CRYSTAL:HT3, DIAPOT:LT5, SWORD:HT5, AXE:LT5"
+        }
+    ];
+
+    localStorage.setItem('aether_database', JSON.stringify(database));
+    
+    let is_admin_mode = false;
+    let logo_clicks = 0;
+
+    window.onload = () => {
+        if (localStorage.getItem('admin_unlocked') === 'true') {
+            is_admin_mode = true;
+            document.getElementById('adminInterface').style.display = 'block';
+        }
+        refreshDisplay();
+    };
+
+    // --- ADMIN VERIFICATION ---
+    function handleLogoClick = function() { }; // placeholder safety
+    function handleLogoClickReset = function() { };
+
+    function handleLogoClickReset = () => {
+        logo_clicks = 0;
+    };
+
+    function handleLogoClickReset.toString = () => {
+        return "";
+    };
+
+    function handleLogoClick() {
+        logo_clicks++;
+        if (logo_clicks >= 3) {
+            if (is_admin_mode) {
+                is_admin_mode = false;
+                localStorage.setItem('admin_unlocked', 'false');
+                document.getElementById('adminInterface').style.display = 'none';
+                alert("Administrator tools locked.");
+            } else {
+                const pass = prompt("Verification Required:");
+                if (pass === "admin123") {
+                    is_admin_mode = true;
+                    localStorage.setItem('admin_unlocked', 'true');
+                    document.getElementById('adminInterface').style.display = 'block';
+                    refreshDisplay();
+                    alert("ACCESS GRANTED: Administrator tools unlocked.");
+                }
+            }
+            logo_clicks = 0;
+        }
+    }
+
+    // --- ADD PLAYER ---
+    function processNewPlayer() {
+        const nameNode = document.getElementById('admin_name');
+        const regionNode = document.getElementById('admin_region');
+        const scoreNode = document.getElementById('admin_score');
+        const tiersNode = document.getElementById('admin_tiers');
+
+        if (!nameNode.value.trim() || !tiersNode.value.trim()) {
+            alert("Error: Missing required inputs.");
+            return;
+        }
+
+        const newEntry = {
+            id: Date.now(),
+            name: nameNode.value.trim(),
+            region: regionNode.value,
+            score: parseInt(scoreNode.value) || 0,
+            tiers: tiersNode.value.trim().toUpperCase()
+        };
+
+        database.push(newEntry);
+        saveAndRefresh();
+        
+        nameNode.value = '';
+        scoreNode.value = '';
+        tiersNode.value = '';
+    }
+
+    // --- REMOVE PLAYER ---
+    function removeEntry(id) {
+        if (confirm("Remove player from rankings?")) {
+            database = database.filter(item => item.id !== id);
+            saveAndRefresh();
+        }
+    }
+
+    // --- EDIT VALUES IN-LINE ---
+    function editRankValues(id) {
+        if (!is_admin_mode) return;
+        
+        const player = database.find(p => p.id === id);
+        if (!player) return;
+
+        const newScore = prompt("Update Score for " + player.name + ":", player.score);
+        if (newScore !== null) {
+            player.score = parseInt(newScore) || player.score;
+        }
+
+        const newTiers = prompt("Update Tiers (e.g. UHC:HT3, POT:LT1):", player.tiers);
+        if (newTiers !== null) {
+            player.tiers = newTiers.trim().toUpperCase();
+        }
+
+        saveAndRefresh();
+    }
+
+    // --- SAVE AND REFRESH ---
+    function saveAndRefresh() {
+        localStorage.setItem('aether_database', JSON.stringify(database));
+        refreshDisplay();
+    }
+
+    // --- REFRESH DISPLAY ---
+    function refreshDisplay() {
+        const container = document.getElementById('rankList');
+        const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+        
+        const activeData = database.filter(p => p.name.toLowerCase().includes(searchTerm));
+        activeData.sort((a, b) => b.score - a.score);
+
+        container.innerHTML = '';
+
+        if (activeData.length === 0) {
+            container.innerHTML = '<div style="text-align: center; color: var(--text-secondary); padding: 40px; font-style: italic;">No ranked players found. Admin must add entries.</div>';
+            return;
+        }
+
+        activeData.forEach((player, index) => {
+            const row = document.createElement('div');
+            row.className = 'player-row';
+            row.draggable = true;
+
+            // HTML5 Drag and Drop Handlers
+            row.ondragstart = (ev) => {
+                ev.dataTransfer.setData("text/plain", player.id);
+            };
+
+            row.ondragover = (ev) => {
+                ev.preventDefault();
+            };
+
+            row.ondrop = (ev) => {
+                ev.preventDefault();
+                const draggedId = parseInt(ev.dataTransfer.getData("text/plain"));
+                const targetId = player.id;
+
+                if (draggedId !== targetId) {
+                    const draggedIndex = database.findIndex(p => p.id === draggedId);
+                    const targetIndex = database.findIndex(p => p.id === targetId);
+
+                    const temp = database[draggedIndex];
+                    database[draggedIndex] = database[targetIndex];
+                    database[targetIndex] = temp;
+
+                    saveAndRefresh();
+                }
+            };
+
+            // HTML for modes
+            const tiersHTML = player.tiers.split(',').map(item => {
+                const parts = item.split(':');
+                const mode = parts[0]?.trim() || '';
+                const tier = parts[1]?.trim() || '';
+
+                let iconSrc = 'https://idree1009.github.io/aethertierlist/' + mode.toLowerCase() + '.png';
+                
+                if (mode === 'SWORD') {
+                    iconSrc = 'https://i.imgur.com/7v12RCR.png';
+                } else if (mode === 'POT' || mode === 'DIAPOT') {
+                    iconSrc = 'https://i.imgur.com/G5rD8Qh.png';
+                } else if (mode === 'MACE') {
+                    iconSrc = 'https://i.imgur.com/qL8hVq5.png';
+                } else if (mode === 'UHC') {
+                    iconSrc = 'https://i.imgur.com/c6w3X9s.png';
+                } else if (mode === 'CRYSTAL') {
+                    iconSrc = 'https://i.imgur.com/2XyvT6p.png';
+                } else {
+                    iconSrc = 'https://i.imgur.com/7v12RCR.png';
+                }
+
+                return `
+                    <div class="tier-item" onclick="editRankValues(${player.id})" title="Click to edit data">
+                        <img src="${iconSrc}" class="tier-icon" alt="${mode}">
+                        <span class="tier-label">${mode} - ${tier}</span>
+                    </div>`;
+            }).join('');
+
+            row.innerHTML = `
+                <div class="rank-number" onclick="editRankValues(${player.id})" title="Click to edit values">#${index + 1}</div>
+                <div class="player-info" onclick="editRankValues(${player.id})">
+                    <div class="player-name">
+                        ${player.name} 
+                        <span class="region-badge">${player.region}</span>
+                    </div>
+                    <div class="score-display">${player.score} pts</div>
+                    <div class="tier-container">${tiersHTML}</div>
+                </div>
+                <div class="delete-action" style="display: ${is_admin_mode ? 'block' : 'none'}" onclick="removeEntry(${player.id})">REMOVE</div>
+            `;
+            container.appendChild(row);
+        });
+    }
+</script>
+</body>
+</html>
