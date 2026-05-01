@@ -182,7 +182,7 @@
 
 <div class="container">
     <div class="header-area">
-        <div class="main-logo" onclick="handleLogoClick()">Aether<span>Tiers</span></div>
+        <div class="main-logo" onclick="handleLogoClickManager.handle()">Aether<span>Tiers</span></div>
         <p style="color: var(--text-secondary); font-size: 13px;">Official Competitive Power Rankings</p>
     </div>
 
@@ -196,9 +196,9 @@
             <div>
                 <label>Region</label>
                 <select id="admin_region">
+                    <option value="AS">AS</option>
                     <option value="NA">NA</option>
                     <option value="EU">EU</option>
-                    <option value="AS">AS</option>
                     <option value="SA">SA</option>
                     <option value="OC">OC</option>
                 </select>
@@ -230,10 +230,9 @@
 
 <script>
     // --- DATABASE ---
-    // Force reset local database on every load to read the hardcoded default database
     localStorage.removeItem('aether_database');
 
-    let database = JSON.parse(localStorage.getItem('aether_database')) || [
+    let database = [
         {
             id: 1,
             name: "Synixal",
@@ -253,7 +252,7 @@
             name: "TabMarsh",
             region: "AS",
             score: 40,
-            tiers: "MACE:HT4, SMP:HT4, NETHPOT:LT5, CRYSTAL:HT4, DIAPOT:LT5, SWORD:LT5, AXE:LT5"
+            tiers: "MACE:HT4, SMP:HT4, NETHPOT:LT5, CRYSTAL:HT4, DIAPOT:LT5, SWORD:HT5, AXE:LT5"
         },
         {
             id: 4,
@@ -267,11 +266,10 @@
             name: "idregalka",
             region: "AS",
             score: 25,
-            tiers: "MACE:LT4, SMP:HT5, NETHPOT:LT5, CRYSTAL:HT3, DIAPOT:LT5, SWORD:LT5, AXE:LT5"
+            tiers: "MACE:LT4, SMP:HT5, NETHPOT:LT5, CRYSTAL:HT3, DIAPOT:LT5, SWORD:HT5, AXE:LT5"
         }
     ];
 
-    // Save to local storage
     localStorage.setItem('aether_database', JSON.stringify(database));
     
     let is_admin_mode = false;
@@ -285,26 +283,27 @@
         refreshDisplay();
     };
 
-    // --- ADMIN VERIFICATION ---
-    function handleLogoClick() {
-        logo_clicks++;
-        if (logo_clicks >= 3) {
-            if (is_admin_mode) {
-                is_admin_mode = false;
-                localStorage.setItem('admin_unlocked', 'false');
-                document.getElementById('adminInterface').style.display = 'none';
-                alert("Administrator tools locked.");
-            } else {
-                const pass = prompt("Verification Required:");
-                if (pass === "admin123") {
-                    is_admin_mode = true;
-                    localStorage.setItem('admin_unlocked', 'true');
-                    document.getElementById('adminInterface').style.display = 'block';
-                    refreshDisplay();
-                    alert("ACCESS GRANTED: Administrator tools unlocked.");
+    class LogoClickManager {
+        static handle() {
+            logo_clicks++;
+            if (logo_clicks >= 3) {
+                if (is_admin_mode) {
+                    is_admin_mode = false;
+                    localStorage.setItem('admin_unlocked', 'false');
+                    document.getElementById('adminInterface').style.display = 'none';
+                    alert("Administrator tools locked.");
+                } else {
+                    const pass = prompt("Verification Required:");
+                    if (pass === "admin123") {
+                        is_admin_mode = true;
+                        localStorage.setItem('admin_unlocked', 'true');
+                        document.getElementById('adminInterface').style.display = 'block';
+                        refreshDisplay();
+                        alert("ACCESS GRANTED: Administrator tools unlocked.");
+                    }
                 }
+                logo_clicks = 0;
             }
-            logo_clicks = 0;
         }
     }
 
